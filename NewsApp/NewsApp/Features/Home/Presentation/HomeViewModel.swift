@@ -27,7 +27,7 @@ final class HomeViewModel {
         
         do {
             news = try await loader.load()
-            print(news, "EYUPHAN")
+            print(news.count, "EYUPHAN")
         } catch {
             errorMessage = error.localizedDescription
         }
