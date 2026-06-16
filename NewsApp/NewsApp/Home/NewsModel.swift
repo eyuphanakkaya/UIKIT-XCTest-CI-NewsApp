@@ -10,8 +10,8 @@ import Foundation
 struct NewsModel: Equatable {
     let id: String
     let title: String
-    let imageURL: String
-    let creator: String
+    let imageURL: String?
+    let creator: [String]?
     let pubDate: String
-    let description: String
+    let description: String?
 }

@@ -13,10 +13,10 @@ enum RemoteFeedMapper {
         private struct NewsModelDTO: Decodable {
             let article_id: String
             let title: String
-            let image_url: String
-            let creator: String
+            let image_url: String?
+            let creator: [String]?
             let pubDate: String
-            let description: String
+            let description: String?
         }
         
         var news: [NewsModel] {
