@@ -35,10 +35,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             loader: loader
         )
         
-        window?.rootViewController = HomeViewController(
+        let homeVC = HomeViewController(
             viewModel: viewModel
         )
+        let navigationController = UINavigationController(rootViewController: homeVC)
         
+        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
         
     }
