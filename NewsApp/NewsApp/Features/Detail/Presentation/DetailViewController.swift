@@ -44,7 +44,7 @@ final class DetailViewController: UIViewController {
     
     private func configureImage(image: String?) {
         guard let image = image, let url = URL(string: image) else {
-            detailImageView.image = UIImage(named: "placeholder")
+            detailImageView.image = UIImage(resource: .news)
             return
         }
         

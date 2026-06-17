@@ -48,7 +48,7 @@ final class NewsCell: UITableViewCell {
     
     private func configureImage(image: String?) {
         guard let image = image, let url = URL(string: image) else {
-            newsImageView.image = UIImage(named: "placeholder")
+            newsImageView.image = UIImage(resource: .news)
             return
         }
         
