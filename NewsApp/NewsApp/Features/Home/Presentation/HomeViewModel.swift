@@ -12,7 +12,7 @@ final class HomeViewModel {
     private let loader: FeedLoader
     private let store: ReadingListStore
     
-    private(set) var news: [NewsModel] = []
+    private var news: [NewsModel] = []
     private var allNews: [NewsModel] = []
     
     private(set) var readingList: [NewsModel] = []
@@ -65,18 +65,22 @@ extension HomeViewModel {
     func fetchReadingList() async {
         do {
             readingList = try await store.retrieve()
+            onUpdate?()
         } catch {
             print(error)
         }
     }
     
-    func toggleReadingList(_ news: NewsModel) async {
-        if readingList.contains(where: { $0.id == news.id }) {
-            await removeFromReadingList(news.id)
-        } else {
-            await addToReadingList(news)
+    func toggleBookmark(at index: Int) async {
+        let item = news[index]
 
+        if readingList.contains(where: { $0.id == item.id }) {
+            await removeFromReadingList(item.id)
+        } else {
+            await addToReadingList(item)
         }
+
+        onUpdate?()
     }
     
     
@@ -96,5 +100,25 @@ extension HomeViewModel {
         } catch {
             print(error)
         }
+    }
+}
+
+
+extension HomeViewModel {
+    func numberOfItems() -> Int {
+        news.count
+    }
+    
+    func item(at index: Int) -> NewsCellViewModel {
+        let item = news[index]
+
+        return NewsCellViewModel(
+            title: item.title,
+            description: item.description,
+            creator: item.creatorText,
+            date: item.pubDate,
+            imageURL: item.imageURL,
+            isBookmarked: readingList.contains { $0.id == item.id }
+        )
     }
 }

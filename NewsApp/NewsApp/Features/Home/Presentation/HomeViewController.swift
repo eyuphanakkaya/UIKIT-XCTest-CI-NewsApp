@@ -84,7 +84,7 @@ private extension HomeViewController {
 // MARK: - UITableView DataSource & Delegate
 extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.news.count
+        viewModel.numberOfItems()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -92,19 +92,18 @@ extension HomeViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let item = viewModel.news[indexPath.row]
-        let isBookmarked = viewModel.readingList.contains { $0.id == item.id }
-        
-        cell.configure(with: item, isBookMarked: isBookmarked)
-        
-        // MARK: - Action
-        cell.onBookmarkToggled = { [weak self] _ in
+        let model = viewModel.item(at: indexPath.row)
+
+        cell.configure(with: model)
+
+        cell.onBookmarkToggled = { [weak self] in
             guard let self else { return }
+
             Task {
-                await self.viewModel.toggleReadingList(item)
-                self.tableView.reloadRows(at: [indexPath], with: .none)
+                await self.viewModel.toggleBookmark(at: indexPath.row)
             }
         }
+
         return cell
     }
 }
