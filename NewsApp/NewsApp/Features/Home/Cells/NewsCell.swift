@@ -25,7 +25,7 @@ final class NewsCell: UITableViewCell {
     private let dateLabel = UILabel()
     private let readListButton = UIButton()
     
-    var onBookmarkToggled: ((Bool) -> Void)?
+    var onBookmarkToggled: (() -> Void)?
 
     private var isBookMarked: Bool = false {
         didSet { updateBookMarkButton() }
@@ -49,13 +49,22 @@ final class NewsCell: UITableViewCell {
         onBookmarkToggled = nil
     }
     
-    func configure(with items: NewsModel, isBookMarked: Bool) {
-        configureImage(image: items.imageURL)
-        creatorLabel.text = items.creatorText
-        titleLabel.text = items.title
-        descriptionLabel.text = items.description
-        dateLabel.text = items.pubDate
-        self.isBookMarked = isBookMarked
+    func configure(with viewModel: NewsCellViewModel) {
+        creatorLabel.text = viewModel.creator
+        titleLabel.text = viewModel.title
+        descriptionLabel.text = viewModel.description
+        dateLabel.text = viewModel.date
+
+        let imageName = viewModel.isBookmarked
+            ? "heart.fill"
+            : "heart"
+
+        readListButton.setImage(
+            UIImage(systemName: imageName),
+            for: .normal
+        )
+
+        configureImage(image: viewModel.imageURL)
     }
     
     private func configureImage(image: String?) {
@@ -76,7 +85,7 @@ final class NewsCell: UITableViewCell {
     
     @objc private func bookMarkTapped() {
         isBookMarked.toggle()
-        onBookmarkToggled?(isBookMarked)
+        onBookmarkToggled?()
     }
     
     
