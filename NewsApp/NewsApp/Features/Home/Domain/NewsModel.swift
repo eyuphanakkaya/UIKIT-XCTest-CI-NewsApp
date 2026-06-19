@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct NewsModel: Equatable {
-    let id: String
-    let title: String
-    let imageURL: String?
-    let creator: [String]?
-    let pubDate: String
-    let description: String?
+public struct NewsModel: Equatable {
+    public let id: String
+    public let title: String
+    public let imageURL: String?
+    public let creator: [String]?
+    public let pubDate: String
+    public let description: String?
     
     var creatorText: String? {
         creator?.joined(separator: ", ").capitalized
