@@ -10,16 +10,21 @@ import Foundation
 @MainActor
 final class HomeViewModel {
     private let loader: FeedLoader
+    private let store: ReadingListStore
     
     private(set) var news: [NewsModel] = []
     private var allNews: [NewsModel] = []
+    
+    private(set) var readingList: [NewsModel] = []
+    
     private(set) var isLoading: Bool = false
     private(set) var errorMessage: String = ""
     
     var onUpdate: (() -> Void)?
     
-    init(loader: FeedLoader) {
+    init(loader: FeedLoader, store: ReadingListStore) {
         self.loader = loader
+        self.store = store
     }
     
     
@@ -54,4 +59,42 @@ final class HomeViewModel {
         onUpdate?()
     }
     
+}
+
+extension HomeViewModel {
+    func fetchReadingList() async {
+        do {
+            readingList = try await store.retrieve()
+        } catch {
+            print(error)
+        }
+    }
+    
+    func toggleReadingList(_ news: NewsModel) async {
+        if readingList.contains(where: { $0.id == news.id }) {
+            await removeFromReadingList(news.id)
+        } else {
+            await addToReadingList(news)
+
+        }
+    }
+    
+    
+    private func addToReadingList(_ news: NewsModel) async {
+        do {
+            try await store.insert(news)
+            readingList.append(news)
+        } catch {
+            print(error)
+        }
+    }
+    
+    private func removeFromReadingList(_ id: String) async {
+        do {
+            try await store.delete(id)
+            readingList.removeAll { $0.id == id }
+        } catch {
+            print(error)
+        }
+    }
 }
