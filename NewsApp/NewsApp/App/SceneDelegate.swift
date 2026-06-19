@@ -31,8 +31,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             url: remoteURL,
             client: client
         )
+        
+        let store = UserDefaultsReadingListStore(userDefaults: .standard)
+        
         let viewModel = HomeViewModel(
-            loader: loader
+            loader: loader,
+            store: store
         )
         
         let homeVC = HomeViewController(
