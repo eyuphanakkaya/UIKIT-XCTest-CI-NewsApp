@@ -60,12 +60,12 @@ private extension HomeViewController {
         viewModel.onUpdate = { [weak self] in
             self?.tableView.reloadData()
         }
-    }
-    
-    func didSelectNews(_ selectedNews: NewsModel) {
-        let vc = DetailViewController(item: selectedNews)
         
-        navigationController?.pushViewController(vc, animated: true)
+        viewModel.onSelectItem = { [weak self] item in
+            let vc = DetailViewController(item: item)
+            
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
     
@@ -110,8 +110,7 @@ extension HomeViewController: UITableViewDataSource {
 
 extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedNews = viewModel.news[indexPath.row]
-        didSelectNews(selectedNews)
+        viewModel.didSelectItem(at: indexPath.row)
     }
 }
 

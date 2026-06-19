@@ -21,6 +21,7 @@ final class HomeViewModel {
     private(set) var errorMessage: String = ""
     
     var onUpdate: (() -> Void)?
+    var onSelectItem: ((NewsModel) -> Void)?
     
     init(loader: FeedLoader, store: ReadingListStore) {
         self.loader = loader
@@ -120,5 +121,20 @@ extension HomeViewModel {
             imageURL: item.imageURL,
             isBookmarked: readingList.contains { $0.id == item.id }
         )
+    }
+    
+    func didSelectItem(at index: Int) {
+        let item = news[index]
+
+        let selected = NewsCellViewModel(
+            title: item.title,
+            description: item.description,
+            creator: item.creatorText,
+            date: item.pubDate,
+            imageURL: item.imageURL,
+            isBookmarked: readingList.contains { $0.id == item.id }
+        )
+
+        onSelectItem?(item)
     }
 }
