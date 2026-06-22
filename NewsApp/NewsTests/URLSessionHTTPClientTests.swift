@@ -40,7 +40,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     
-    func test_getFromURL_successDataTask() async throws {
+    func test_getFromURL_successDataTask() async {
         let anyData = anyData()
         let anyResponse =  anyHTTPURLResponse()
         
@@ -61,7 +61,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertEqual(anyResponse.url,receivedValue?.1.url)
         XCTAssertEqual(anyResponse.statusCode,receivedValue?.1.statusCode)
     }
-    
     
     
     
