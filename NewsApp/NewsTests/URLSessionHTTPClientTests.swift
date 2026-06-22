@@ -11,12 +11,12 @@ import NewsApp
 final class URLSessionHTTPClientTests: XCTestCase {
 
     func test_getFromURL_performGETRequestWithURL() async throws {
-        let url = URL(string: "https://any-url.com")!
+        let url = anyURL()
         let sut = makeSUT()
         
         URLProtocolStub.stub(
             data: Data(),
-            response: HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil),
+            response: anyHTTPURLResponse(),
             error: nil)
         
         _ = try await sut.get(url: url)
@@ -26,7 +26,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     
     
     func test_getFromURL_failDataTask() async {
-        let url = URL(string: "https://any-url.com")!
+        let url = anyURL()
         let expectedError = NSError(domain: "any", code: 0)
         let sut = makeSUT()
         
@@ -47,9 +47,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
     
     
     func test_getFromURL_successDataTask() async throws {
-        let url = URL(string: "https://any-url.com")!
-        let anyData = Data("any data".utf8)
-        let anyResponse =  HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        let url = anyURL()
+        let anyData = anyData()
+        let anyResponse =  anyHTTPURLResponse()
         let sut = makeSUT()
         
         URLProtocolStub.stub(
@@ -61,14 +61,14 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let (data, response) = try await sut.get(url: url)
         
         XCTAssertEqual(anyData, data)
-        XCTAssertEqual(anyResponse?.url, response.url)
-        XCTAssertEqual(anyResponse?.statusCode, response.statusCode)
+        XCTAssertEqual(anyResponse.url, response.url)
+        XCTAssertEqual(anyResponse.statusCode, response.statusCode)
     }
     
     func test_getFromURL_successEmptyDataTask() async throws {
-        let url = URL(string: "https://any-url.com")!
+        let url = anyURL()
         let emptyData = Data()
-        let anyResponse =  HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        let anyResponse =  anyHTTPURLResponse()
         let sut = makeSUT()
         
         URLProtocolStub.stub(
@@ -79,8 +79,8 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let (data, response) = try await sut.get(url: url)
         
         XCTAssertEqual(data, emptyData)
-        XCTAssertEqual(anyResponse?.url, response.url)
-        XCTAssertEqual(anyResponse?.statusCode, response.statusCode)
+        XCTAssertEqual(anyResponse.url, response.url)
+        XCTAssertEqual(anyResponse.statusCode, response.statusCode)
     }
     
     
@@ -93,6 +93,22 @@ final class URLSessionHTTPClientTests: XCTestCase {
         let session = URLSession(configuration: configuration)
         let sut = URLSessionHTTPClient(session: session)
         return sut
+    }
+    
+    private func anyURL() -> URL {
+        URL(string: "https://any-url.com")!
+    }
+    
+    private func anyData() -> Data {
+        Data("any data".utf8)
+    }
+    
+    private func anyHTTPURLResponse() -> HTTPURLResponse {
+        return HTTPURLResponse(url: anyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)!
+    }
+    
+    private func nonHTTPURLResponse() -> URLResponse {
+        return URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
     }
     
     private final class URLProtocolStub: URLProtocol {
