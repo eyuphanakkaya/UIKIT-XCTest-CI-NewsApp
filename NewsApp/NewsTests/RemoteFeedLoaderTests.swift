@@ -20,11 +20,23 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.results = [.success((validJSON(), anyHTTPURLResponse(for: url)))]
-        
+        client.stubbedResult = .success((validJSON(), anyHTTPURLResponse(for: url)))
+
         _ = try await sut.load()
         
         XCTAssertEqual(client.requestURLs, [url])
+    }
+    
+    func test_loadTwice_requestsDataFromURL() async throws {
+        let url = URL(string: "https://www.example.com")!
+        let (sut, client) = makeSUT(url)
+        
+        client.stubbedResult = .success((validJSON(), anyHTTPURLResponse(for: url)))
+
+        _ = try await sut.load()
+        _ = try await sut.load()
+        
+        XCTAssertEqual(client.requestURLs, [url, url])
     }
     
     // MARK: - Helpers
@@ -38,11 +50,13 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     private final class HTTPClientSpy: HTTPClient {
         private(set) var requestURLs = [URL]()
-        var results: [Result<(Data, HTTPURLResponse), Error>] = []
+        var stubbedResult: Result<(Data, HTTPURLResponse), Error> = .failure(
+            NSError(domain: "HTTPClientSpy", code: 0)
+        )
         
         func get(url: URL) async throws -> (Data, HTTPURLResponse) {
             requestURLs.append(url)
-            return try results.removeFirst().get()
+            return try stubbedResult.get()
         }
     }
     
