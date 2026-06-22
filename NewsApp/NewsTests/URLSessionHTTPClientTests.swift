@@ -46,6 +46,24 @@ final class URLSessionHTTPClientTests: XCTestCase {
     }
     
     
+    func test_getFromURL_successDataTask() async throws {
+        let url = URL(string: "https://any-url.com")!
+        let anyData = Data("any data".utf8)
+        let anyResponse =  HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)
+        let sut = makeSUT()
+        
+        URLProtocolStub.stub(
+            data: anyData,
+            response: anyResponse,
+            error: nil
+        )
+        
+        let (data, response) = try await sut.get(url: url)
+        
+        XCTAssertEqual(anyData, data)
+        XCTAssertEqual(anyResponse?.url, response.url)
+        XCTAssertEqual(anyResponse?.statusCode, response.statusCode)
+    }
     
     
     
