@@ -9,6 +9,11 @@ import XCTest
 import NewsApp
 
 final class URLSessionHTTPClientTests: XCTestCase {
+    
+    override func tearDown() {
+        super.tearDown()
+        URLProtocolStub.removeStub()
+    }
 
     func test_getFromURL_performGETRequestWithURL() async throws {
         let url = anyURL()
@@ -131,6 +136,11 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         static func stub(data: Data?, response: URLResponse?, error: Error?) {
             stub = Stub(data: data, response: response, error: error)
+        }
+        
+        
+        static func removeStub() {
+            stub = nil
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
