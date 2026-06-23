@@ -55,6 +55,26 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
     }
     
+    
+    func test_load_deliversErrorOnInvalidJSON() async {
+        let url = URL(string: "https://www.example.com")!
+        let (sut, client) = makeSUT()
+        
+        client.stubbedResult = .success(
+            (
+                Data("invalid json".utf8),
+                anyHTTPURLResponse(for: url)
+            ))
+        
+        do {
+            let result = try await sut.load()
+            XCTFail("Expected error but got \(result)")
+        } catch {
+            XCTAssertTrue(error is DecodingError, "Expected DecodingError but got \(error)")
+        }
+    }
+    
+    
     func test_load_deliversSuccessOnEmptyList() async throws {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT()
