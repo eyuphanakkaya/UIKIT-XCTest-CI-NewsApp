@@ -57,13 +57,12 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     
     func test_load_deliversErrorOnInvalidJSON() async {
-        let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT()
         
         client.stubbedResult = .success(
             (
                 Data("invalid json".utf8),
-                anyHTTPURLResponse(for: url)
+                anyHTTPURLResponse()
             ))
         
         do {
@@ -76,10 +75,9 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     
     func test_load_deliversSuccessOnEmptyList() async throws {
-        let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT()
         
-        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse(for: url)))
+        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse()))
         
         let result = try await sut.load()
         
@@ -87,7 +85,6 @@ final class RemoteFeedLoaderTests: XCTestCase {
     }
     
     func test_load_deliverSuccessOnValidJSON() async throws {
-        let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT()
         
         let item1  = makeItem(
@@ -113,7 +110,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
                 item1.json,
                 item2.json
             ]),
-            anyHTTPURLResponse(for: url)
+            anyHTTPURLResponse()
         ))
         
         let result = try await sut.load()
@@ -140,7 +137,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     }
     
     // MARK: - Helpers
-    private func makeSUT(_ url: URL = URL(string: "https://dummy.url")!) -> (sut: FeedLoader, client: HTTPClientSpy) {
+    private func makeSUT(_ url: URL = URL(string: "https://any-url.com")!) -> (sut: FeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
         let sut = RemoteFeedLoader(baseURL: url, client: client)
         
@@ -201,7 +198,9 @@ final class RemoteFeedLoaderTests: XCTestCase {
     
     
     
-    private func anyHTTPURLResponse(for url: URL) -> HTTPURLResponse {
+    private func anyHTTPURLResponse(
+        for url: URL = URL(string: "https://any-url.com")!) -> HTTPURLResponse
+    {
         HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
     }
 }
