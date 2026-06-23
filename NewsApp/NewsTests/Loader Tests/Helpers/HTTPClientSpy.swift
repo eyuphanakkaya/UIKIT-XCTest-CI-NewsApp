@@ -22,7 +22,7 @@ final class HTTPClientSpy: HTTPClient {
     
     // MARK: - Helpers
     func completeWithSuccess(_ data: Data, for url: URL = URL(string: "https://any-url.com")!) {
-        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        let response = anyHTTPURLResponse(for: url)
         stubbedResult = .success((data, response))
     }
     

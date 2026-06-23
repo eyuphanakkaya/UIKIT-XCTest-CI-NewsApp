@@ -189,31 +189,6 @@ final class RemoteFeedLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    private func emptyFeedJSON() -> Data {
-        let json: [String: Any] = [
-            "results": [],
-            "nextPage": NSNull()
-        ]
-        return try! JSONSerialization.data(withJSONObject: json)
-    }
-    
-    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
-        let json: [String: Any] = [
-            "results": items,
-            "nextPage": NSNull()
-        ]
-
-        return try! JSONSerialization.data(withJSONObject: json)
-    }
-    
-    private func feedJSONWithNextPage(_ token: String) -> Data {
-        let json: [String: Any] = [
-            "results": [],
-            "nextPage": token
-        ]
-        return try! JSONSerialization.data(withJSONObject: json)
-    }
-    
     private func makeItem(
         id: String = "1",
         title: String = "A title",
@@ -246,11 +221,28 @@ final class RemoteFeedLoaderTests: XCTestCase {
         return (model, json)
     }
     
+    private func emptyFeedJSON() -> Data {
+        let json: [String: Any] = [
+            "results": [],
+            "nextPage": NSNull()
+        ]
+        return try! JSONSerialization.data(withJSONObject: json)
+    }
     
+    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+        let json: [String: Any] = [
+            "results": items,
+            "nextPage": NSNull()
+        ]
+
+        return try! JSONSerialization.data(withJSONObject: json)
+    }
     
-    private func anyHTTPURLResponse(
-        for url: URL = URL(string: "https://any-url.com")!) -> HTTPURLResponse
-    {
-        HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+    private func feedJSONWithNextPage(_ token: String) -> Data {
+        let json: [String: Any] = [
+            "results": [],
+            "nextPage": token
+        ]
+        return try! JSONSerialization.data(withJSONObject: json)
     }
 }
