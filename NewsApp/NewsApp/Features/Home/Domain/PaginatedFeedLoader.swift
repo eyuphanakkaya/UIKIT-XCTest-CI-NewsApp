@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PaginatedFeedLoader {
+public protocol PaginatedFeedLoader {
     func loadMore() async throws -> [NewsModel]
     var hasMore: Bool { get }
 }
