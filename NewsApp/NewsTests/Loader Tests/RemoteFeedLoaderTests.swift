@@ -55,6 +55,17 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
     }
     
+    func test_load_deliversSuccessOnEmptyList() async throws {
+        let url = URL(string: "https://www.example.com")!
+        let (sut, client) = makeSUT()
+        
+        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse(for: url)))
+        
+        let result = try await sut.load()
+        
+        XCTAssertEqual(result, [])
+    }
+    
     func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async throws {
         let url = URL(string: "https://any-url.com")!
         let client = HTTPClientSpy()
