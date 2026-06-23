@@ -7,25 +7,25 @@
 
 import Foundation
 
-final class RemoteFeedLoader: FeedLoader, PaginatedFeedLoader {
+final public class RemoteFeedLoader: FeedLoader, PaginatedFeedLoader {
     private let baseURL: URL
     private let client: HTTPClient
     
     private var nextPage: String? = nil
-    private(set) var hasMore: Bool = true
+    private(set) public var hasMore: Bool = true
     
-    init(baseURL: URL, client: HTTPClient) {
+    public init(baseURL: URL, client: HTTPClient) {
         self.baseURL = baseURL
         self.client = client
     }
     
-    func load() async throws -> [NewsModel] {
+    public func load() async throws -> [NewsModel] {
         nextPage = nil
         hasMore = true
         return try await fetch()
     }
     
-    func loadMore() async throws -> [NewsModel] {
+    public func loadMore() async throws -> [NewsModel] {
         guard hasMore else { return [] }
         return try await fetch()
     }
