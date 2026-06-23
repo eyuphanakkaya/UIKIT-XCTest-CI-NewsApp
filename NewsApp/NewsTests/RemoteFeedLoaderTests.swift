@@ -55,6 +55,24 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
     }
     
+    func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async throws {
+        let url = URL(string: "https://any-url.com")!
+        let client = HTTPClientSpy()
+        var sut: FeedLoader? = await RemoteFeedLoader(baseURL: url, client: client)
+        
+        var capturedResult: [NewsModel]? = nil
+        let task = Task {
+            capturedResult = try? await sut?.load()
+        }
+        
+        sut = nil
+        task.cancel()
+        
+        await task.value
+        
+        XCTAssertNil(capturedResult, "SUT deallocate before finish")
+    }
+    
     // MARK: - Helpers
     private func makeSUT(_ url: URL = URL(string: "https://dummy.url")!) -> (sut: FeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
