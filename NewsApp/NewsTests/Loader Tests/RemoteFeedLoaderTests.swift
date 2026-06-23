@@ -20,7 +20,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.stubbedResult = .success((validJSON(), anyHTTPURLResponse(for: url)))
+        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse(for: url)))
 
         _ = try await sut.load()
         
@@ -31,7 +31,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.stubbedResult = .success((validJSON(), anyHTTPURLResponse(for: url)))
+        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse(for: url)))
 
         _ = try await sut.load()
         _ = try await sut.load()
@@ -81,7 +81,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    private func validJSON() -> Data {
+    private func emptyFeedJSON() -> Data {
         let json: [String: Any] = [
             "results": [],
             "nextPage": NSNull()
