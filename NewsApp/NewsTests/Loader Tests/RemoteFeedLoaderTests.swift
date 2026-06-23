@@ -20,7 +20,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.completeWithSuccess(emptyFeedJSON(), for: url)
+        client.completeWithSuccess(makeFeedJSON(), for: url)
 
         _ = try await sut.load()
         
@@ -31,7 +31,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.completeWithSuccess(emptyFeedJSON(), for: url)
+        client.completeWithSuccess(makeFeedJSON(), for: url)
 
         _ = try await sut.load()
         _ = try await sut.load()
@@ -73,7 +73,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversSuccessOnEmptyList() async throws {
         let (sut, client) = makeSUT()
 
-        client.completeWithSuccess(emptyFeedJSON())
+        client.completeWithSuccess(makeFeedJSON())
         
         let result = try await sut.load()
         
@@ -102,7 +102,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         )
         
         client.completeWithSuccess(
-            makeItemsJSON([
+            makeFeedJSON([
             item1.json,
             item2.json
         ]))
@@ -118,11 +118,11 @@ final class RemoteFeedLoaderTests: XCTestCase {
 
         let (sut, client) = makeSUT(url)
         
-        client.completeWithSuccess(feedJSONWithNextPage("token123"), for: url)
+        client.completeWithSuccess(makeFeedJSON(nextPage: "token123"), for: url)
         
         _ = try await sut.load()
         
-        client.completeWithSuccess(emptyFeedJSON(), for: url)
+        client.completeWithSuccess(makeFeedJSON(), for: url)
         _ = try await sut.load()
         
         XCTAssertEqual(client.requestURLs, [url, url])
@@ -132,7 +132,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     func test_loadMore_doesNotRequestDataWhenHasNoMore() async throws {
         let (sut, client) = makeSUT()
         
-        client.completeWithSuccess(emptyFeedJSON())
+        client.completeWithSuccess(makeFeedJSON())
         
         _ = try await sut.load()
         
@@ -145,12 +145,12 @@ final class RemoteFeedLoaderTests: XCTestCase {
         let url = URL(string: "https://www.example.com")!
         let (sut, client) = makeSUT(url)
         
-        client.completeWithSuccess(feedJSONWithNextPage("token123"), for: url)
+        client.completeWithSuccess(makeFeedJSON(nextPage: "token123"), for: url)
         
         _ = try await sut.load()
         
         let expectedURL = URL(string: "https://www.example.com?page=token123")!
-        client.completeWithSuccess(emptyFeedJSON(), for: expectedURL)
+        client.completeWithSuccess(makeFeedJSON(), for: expectedURL)
         
         _ = try await sut.loadMore()
         
@@ -221,27 +221,13 @@ final class RemoteFeedLoaderTests: XCTestCase {
         return (model, json)
     }
     
-    private func emptyFeedJSON() -> Data {
-        let json: [String: Any] = [
-            "results": [],
-            "nextPage": NSNull()
-        ]
-        return try! JSONSerialization.data(withJSONObject: json)
-    }
-    
-    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+    private func makeFeedJSON(
+        _ items: [[String: Any]] = [],
+        nextPage: String? = nil
+    ) -> Data {
         let json: [String: Any] = [
             "results": items,
-            "nextPage": NSNull()
-        ]
-
-        return try! JSONSerialization.data(withJSONObject: json)
-    }
-    
-    private func feedJSONWithNextPage(_ token: String) -> Data {
-        let json: [String: Any] = [
-            "results": [],
-            "nextPage": token
+            "nextPage": nextPage as Any
         ]
         return try! JSONSerialization.data(withJSONObject: json)
     }
