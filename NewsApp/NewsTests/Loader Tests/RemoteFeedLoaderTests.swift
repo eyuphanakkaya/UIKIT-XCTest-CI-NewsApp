@@ -118,6 +118,21 @@ final class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(result, [item1.model, item2.model])
     }
     
+    func test_load_resetsStateAfterLoadMore() async throws {
+        let url = URL(string: "https://www.example.com")!
+
+        let (sut, client) = makeSUT(url)
+        
+        client.stubbedResult = .success((feedJSONWithNextPage("token123"), anyHTTPURLResponse(for: url)))
+        
+        _ = try await sut.load()
+        
+        client.stubbedResult = .success((emptyFeedJSON(), anyHTTPURLResponse(for: url)))
+        _ = try await sut.load()
+        
+        XCTAssertEqual(client.requestURLs, [url, url])
+    }
+    
     
     func test_loadMore_doesNotRequestDataWhenHasNoMore() async throws {
         let (sut, client) = makeSUT()
@@ -146,6 +161,8 @@ final class RemoteFeedLoaderTests: XCTestCase {
         
         XCTAssertEqual(client.requestURLs, [url, expectedURL])
     }
+    
+    
     
     
     func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async throws {
