@@ -65,6 +65,24 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         XCTAssertEqual(result, [])
     }
     
+    func test_delete_removesOnlyMatchingItem() async throws {
+        let sut = makeSUT()
+        let item1 = makeItem(id: "1")
+        let item2 = makeItem(id: "2")
+        let item3 = makeItem(id: "3")
+        
+        
+        try await sut.insert(item1)
+        try await sut.insert(item2)
+        try await sut.insert(item3)
+        
+        try await sut.delete(item2.id)
+        
+        let result = try await sut.retrieve()
+        
+        XCTAssertEqual(result, [item1, item3])
+    }
+    
     
     // MARK: - Helpers
     private func makeSUT() -> UserDefaultsReadingListStore {
