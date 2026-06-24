@@ -55,7 +55,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     }
     
     
-    func test_load_deliversErrorOnInvalidJSON() async {
+    func test_load_deliversDecodingErrorOnInvalidJSON() async {
         let (sut, client) = makeSUT()
         let invalidJson = Data("invalid json".utf8)
         
@@ -70,7 +70,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
     }
     
     
-    func test_load_deliversSuccessOnEmptyList() async throws {
+    func test_load_deliversEmptyListOn200ResponseWithEmptyResults() async throws {
         let (sut, client) = makeSUT()
 
         client.completeWithSuccess(makeFeedJSON())
@@ -80,7 +80,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(result, [])
     }
     
-    func test_load_deliverSuccessOnValidJSON() async throws {
+    func test_load_deliversMappedItemsOn200HTTPResponse() async throws {
         let (sut, client) = makeSUT()
         
         let item1  = makeItem(
@@ -113,7 +113,7 @@ final class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(result, [item1.model, item2.model])
     }
     
-    func test_load_resetsStateAfterLoadMore() async throws {
+    func test_load_afterLoadMore_requestsBaseURLAgain() async throws {
         let url = URL(string: "https://www.example.com")!
 
         let (sut, client) = makeSUT(url)
