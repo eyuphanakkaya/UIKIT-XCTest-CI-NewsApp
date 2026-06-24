@@ -10,7 +10,7 @@ import NewsApp
 
 final class UserDefaultsReadingListStoreTests: XCTestCase {
     
-    func test_retrieve_emptyList() async throws {
+    func test_retrieve_deliversEmptyListOnEmptyStore() async throws {
         let sut = makeSUT()
         
         let result = try await sut.retrieve()
@@ -18,7 +18,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
     
-    func test_insert_deliverInsertedItem() async throws {
+    func test_insert_deliversInsertedItem() async throws {
         let sut = makeSUT()
         let item = makeItem()
 
@@ -31,7 +31,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     }
     
     
-    func test_delete_deleteSelectedItem() async throws {
+    func test_delete_removesInsertedItem() async throws {
         let sut = makeSUT()
         let item = makeItem()
         
