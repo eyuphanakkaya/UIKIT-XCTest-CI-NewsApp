@@ -83,6 +83,22 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         XCTAssertEqual(result, [item1, item3])
     }
     
+    func test_delete_nonExistingItemLeavesStoreUnchanged() async throws {
+        let sut = makeSUT()
+        let item1 = makeItem(id: "1")
+        let item2 = makeItem(id: "2")
+        
+        
+        try await sut.insert(item1)
+        try await sut.insert(item2)
+        
+        try await sut.delete("3")
+        
+        let result = try await sut.retrieve()
+        
+        XCTAssertEqual(result, [item1, item2])
+    }
+    
     
     // MARK: - Helpers
     private func makeSUT() -> UserDefaultsReadingListStore {
