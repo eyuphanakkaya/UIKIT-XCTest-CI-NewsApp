@@ -128,6 +128,19 @@ final class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestURLs, [url, url])
     }
     
+    func test_load_deliversErrorOnNon200HTTPResponse() async {
+        let (sut, client) = makeSUT()
+        
+        client.completeWithSuccess(makeFeedJSON(), statusCode: 400)
+        
+        do {
+            let result = try await sut.load()
+            XCTFail("Expected error but got \(result)")
+        } catch {
+            XCTAssertTrue(error is RemoteFeedMapper.Error)
+        }
+    }
+    
     
     func test_loadMore_doesNotRequestDataWhenHasNoMore() async throws {
         let (sut, client) = makeSUT()
