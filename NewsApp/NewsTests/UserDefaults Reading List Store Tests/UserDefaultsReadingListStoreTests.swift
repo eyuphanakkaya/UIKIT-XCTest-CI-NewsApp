@@ -20,14 +20,8 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_insert_deliverInsertedItem() async throws {
         let sut = makeSUT()
-        
-        let item = await NewsModel(
-            id: "1",
-            title: "A title",
-            imageURL: "https://image.com/image.jpg",
-            creator: ["John"],
-            pubDate: "2026-06-22",
-            description: "Description")
+        let item = makeItem()
+
         
         try await sut.insert(item)
         
@@ -39,14 +33,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_delete_deleteSelectedItem() async throws {
         let sut = makeSUT()
-        
-        let item = await NewsModel(
-            id: "1",
-            title: "A title",
-            imageURL: "https://image.com/image.jpg",
-            creator: ["John"],
-            pubDate: "2026-06-22",
-            description: "Description")
+        let item = makeItem()
         
         try await sut.insert(item)
         
@@ -64,5 +51,26 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!
         )
         return sut
+    }
+    
+    
+    private func makeItem(
+        id: String = "1",
+        title: String = "A title",
+        imageURL: String? = "https://image.com/image.jpg",
+        creator: [String]? = ["John"],
+        pubDate: String = "2026-06-22",
+        description: String? = "Description"
+    ) -> NewsModel {
+        let model = NewsModel(
+            id: id,
+            title: title,
+            imageURL: imageURL,
+            creator: creator,
+            pubDate: pubDate,
+            description: description
+        )
+
+        return model
     }
 }
