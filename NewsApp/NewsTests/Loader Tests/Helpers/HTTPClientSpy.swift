@@ -21,8 +21,8 @@ final class HTTPClientSpy: HTTPClient {
     }
     
     // MARK: - Helpers
-    func completeWithSuccess(_ data: Data, for url: URL = URL(string: "https://any-url.com")!) {
-        let response = anyHTTPURLResponse(for: url)
+    func completeWithSuccess(_ data: Data, for url: URL = URL(string: "https://any-url.com")!, statusCode: Int = 200) {
+        let response = anyHTTPURLResponse(for: url, statusCode: statusCode)
         stubbedResult = .success((data, response))
     }
     
