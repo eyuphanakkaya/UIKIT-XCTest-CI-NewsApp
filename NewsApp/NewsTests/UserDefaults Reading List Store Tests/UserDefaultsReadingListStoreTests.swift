@@ -25,9 +25,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         
         try await sut.insert(item)
         
-        let result = try await sut.retrieve()
-        
-        XCTAssertEqual(result, [item])
+        try await expect(sut, toRetrieve: [item])
     }
     
     func test_insert_replacesExistingItemWithSameID() async throws {
@@ -40,9 +38,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         try await sut.insert(first)
         try await sut.insert(updated)
         
-        let result = try await sut.retrieve()
-        
-        XCTAssertEqual(result, [updated])
+        try await expect(sut, toRetrieve: [updated])
     }
     
     
@@ -62,8 +58,6 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     func test_delete_removesOnlyMatchingItem() async throws {
         let sut = makeSUT()
         let (item1, item2, item3) = (uniqueItem(), uniqueItem(), uniqueItem())
-
-        
         
         try await sut.insert(item1)
         try await sut.insert(item2)
@@ -71,9 +65,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         
         try await sut.delete(item2.id)
         
-        let result = try await sut.retrieve()
-        
-        XCTAssertEqual(result, [item1, item3])
+        try await expect(sut, toRetrieve: [item1, item3])
     }
     
     func test_delete_nonExistingItemLeavesStoreUnchanged() async throws {
@@ -86,9 +78,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
         
         try await sut.delete("3")
         
-        let result = try await sut.retrieve()
-        
-        XCTAssertEqual(result, [item1, item2])
+        try await expect(sut, toRetrieve: [item1, item2])
     }
     
     
@@ -98,6 +88,15 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!
         )
         return sut
+    }
+    
+    private func expect(_ sut: UserDefaultsReadingListStore,
+                        toRetrieve expected: [NewsModel],
+                        file: StaticString = #filePath,
+                        line: UInt = #line) async throws {
+        let result = try await sut.retrieve()
+        
+        XCTAssertEqual(result, expected, file: file, line: line)
     }
     
     
