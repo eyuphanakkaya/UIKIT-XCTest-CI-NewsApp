@@ -20,7 +20,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_insert_deliversInsertedItem() async throws {
         let sut = makeSUT()
-        let item = makeItem()
+        let item = uniqueItem()
 
         
         try await sut.insert(item)
@@ -33,15 +33,9 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     func test_insert_replacesExistingItemWithSameID() async throws {
         let sut = makeSUT()
         
-        let first = makeItem(
-            id: "1",
-            title: "Old"
-        )
+        let first = uniqueItem(id: "1")
         
-        let updated = makeItem(
-            id: "1",
-            title: "New"
-        )
+        let updated = uniqueItem(id: "1")
         
         try await sut.insert(first)
         try await sut.insert(updated)
@@ -54,7 +48,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_delete_removesInsertedItem() async throws {
         let sut = makeSUT()
-        let item = makeItem()
+        let item = uniqueItem()
         
         try await sut.insert(item)
         
@@ -67,9 +61,8 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_delete_removesOnlyMatchingItem() async throws {
         let sut = makeSUT()
-        let item1 = makeItem(id: "1")
-        let item2 = makeItem(id: "2")
-        let item3 = makeItem(id: "3")
+        let (item1, item2, item3) = (uniqueItem(), uniqueItem(), uniqueItem())
+
         
         
         try await sut.insert(item1)
@@ -85,8 +78,7 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     
     func test_delete_nonExistingItemLeavesStoreUnchanged() async throws {
         let sut = makeSUT()
-        let item1 = makeItem(id: "1")
-        let item2 = makeItem(id: "2")
+        let (item1, item2) = (uniqueItem(), uniqueItem())
         
         
         try await sut.insert(item1)
@@ -109,23 +101,17 @@ final class UserDefaultsReadingListStoreTests: XCTestCase {
     }
     
     
-    private func makeItem(
-        id: String = "1",
-        title: String = "A title",
-        imageURL: String? = "https://image.com/image.jpg",
-        creator: [String]? = ["John"],
-        pubDate: String = "2026-06-22",
-        description: String? = "Description"
+    private func uniqueItem(
+        id: String = UUID().uuidString,
+        title: String = "any title"
     ) -> NewsModel {
-        let model = NewsModel(
+        NewsModel(
             id: id,
             title: title,
-            imageURL: imageURL,
-            creator: creator,
-            pubDate: pubDate,
-            description: description
+            imageURL: "https://image.com/image.jpg",
+            creator: ["John"],
+            pubDate: "2026-06-22",
+            description: "Description"
         )
-
-        return model
     }
 }
