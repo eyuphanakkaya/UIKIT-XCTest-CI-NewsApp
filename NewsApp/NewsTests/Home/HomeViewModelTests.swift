@@ -85,6 +85,20 @@ final class HomeViewModelTests: XCTestCase {
     }
     
     
+    func test_loadMore_appendsNewItemsToExistingItems() async {
+        let (sut, client) = makeSUT()
+        client.stubbedResult = [ uniqueItem(), uniqueItem() ]
+        
+        await sut.load()
+        
+        client.hasMore = true
+        client.stubbedResult = [ uniqueItem(), uniqueItem() ]
+        await sut.loadMore()
+        
+        XCTAssertEqual(sut.numberOfItems(), 4)
+    }
+    
+    
     // MARK: - Helpers
     private func makeSUT(
         file: StaticString = #filePath,
