@@ -119,32 +119,18 @@ final class HomeViewModelTests: XCTestCase {
     
     func test_search_deliversMatchingItems_onQuery() async {
         let (sut, client) = makeSUT()
-        client.stubbedResult = [
-            uniqueItem(title: "Swift tutorial"),
-            uniqueItem(title: "iOS Development"),
-            uniqueItem(title: "Swift concurrency")
-        ]
         
-        await sut.load()
-        
-        sut.search("Swift")
-        
-        XCTAssertEqual(sut.numberOfItems(), 2)
+        await expect(sut, client, query: "Swift") {
+            XCTAssertEqual(sut.numberOfItems(), 2)
+        }
     }
     
     func test_search_deliversNoItems_onNonMatchingQuery() async {
         let (sut, client) = makeSUT()
-        client.stubbedResult = [
-            uniqueItem(title: "Swift tutorial"),
-            uniqueItem(title: "iOS Development"),
-            uniqueItem(title: "Swift concurrency")
-        ]
         
-        await sut.load()
-        
-        sut.search("Apple")
-        
-        XCTAssertEqual(sut.numberOfItems(), 0)
+        await expect(sut, client, query: "Apple") {
+            XCTAssertEqual(sut.numberOfItems(), 0)
+        }
     }
     
     func test_search_deliversAllItems_onEmptyQueryAfterFiltering() async {
@@ -165,17 +151,11 @@ final class HomeViewModelTests: XCTestCase {
     
     func test_search_deliversItems_insenstiveToCase() async {
         let (sut, client) = makeSUT()
-        client.stubbedResult = [
-            uniqueItem(title: "Swift tutorial"),
-            uniqueItem(title: "iOS Development"),
-            uniqueItem(title: "swift concurrency")
-        ]
         
-        await sut.load()
-        
-        sut.search("swift")
+        await expect(sut, client, query: "swift") {
+            XCTAssertEqual(sut.numberOfItems(), 2)
+        }
 
-        XCTAssertEqual(sut.numberOfItems(), 2)
     }
     
     
@@ -214,6 +194,25 @@ final class HomeViewModelTests: XCTestCase {
         await action()
         
         XCTAssertEqual(capturedStates, states, file: file, line: line)
+    }
+    
+    private func expect(
+        _ sut: HomeViewModel,
+        _ client: FeedLoaderSpy,
+        query: String,
+        assertions: () -> Void
+    ) async {
+        client.stubbedResult = [
+            uniqueItem(title: "Swift tutorial"),
+            uniqueItem(title: "iOS Development"),
+            uniqueItem(title: "swift concurrency")
+        ]
+        
+        await sut.load()
+        
+        sut.search(query)
+        
+        assertions()
     }
     
     
