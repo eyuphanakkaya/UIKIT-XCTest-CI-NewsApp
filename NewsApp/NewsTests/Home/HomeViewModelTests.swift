@@ -13,31 +13,15 @@ final class HomeViewModelTests: XCTestCase {
     
     func test_load_transitionsThroughLoadingToLoaded() async {
         let (sut, _) = makeSUT()
-        
-        var capturedStates: [HomeViewModel.ViewState] = []
-        sut.onUpdate = { [weak sut] in
-            guard let sut else { return }
-            capturedStates.append(sut.state)
-        }
-        
-        await sut.load()
-        
-        XCTAssertEqual(capturedStates, [.loading, .loaded])
+    
+        await expect(sut, states: [.loading, .loaded])
     }
     
     func test_load_transitionsThroughLoadingToNetworkError() async {
         let (sut, client) = makeSUT()
         client.stubbedError = anyNSError()
         
-        var capturedStates: [HomeViewModel.ViewState] = []
-        sut.onUpdate = { [weak sut] in
-            guard let sut else { return }
-            capturedStates.append(sut.state)
-        }
-        
-        await sut.load()
-        
-        XCTAssertEqual(capturedStates, [.loading, .failed(.network)])
+        await expect(sut, states: [.loading, .failed(.network)])
     }
     
     
@@ -57,6 +41,18 @@ final class HomeViewModelTests: XCTestCase {
         trackForMemoryLeaks(sut,file: file, line: line)
         
         return (sut, client)
+    }
+    
+    private func expect(_ sut: HomeViewModel, states: [HomeViewModel.ViewState]) async {
+        var capturedStates: [HomeViewModel.ViewState] = []
+        sut.onUpdate = { [weak sut] in
+            guard let sut else { return }
+            capturedStates.append(sut.state)
+        }
+        
+        await sut.load()
+        
+        XCTAssertEqual(capturedStates, states)
     }
     
     
