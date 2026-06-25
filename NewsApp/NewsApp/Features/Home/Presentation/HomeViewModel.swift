@@ -8,8 +8,8 @@
 import Foundation
 
 @MainActor
-final class HomeViewModel {
-    typealias FeedLoad = FeedLoader & PaginatedFeedLoader
+final public class HomeViewModel {
+    public typealias FeedLoad = FeedLoader & PaginatedFeedLoader
     private let loader: FeedLoad
     private let store: ReadingListStore
     
@@ -18,30 +18,30 @@ final class HomeViewModel {
     
     private(set) var readingList: [NewsModel] = []
     
-    enum ViewState: Equatable {
+    public enum ViewState: Equatable {
         case idle
         case loading
         case loaded
         case failed(AppError)
     }
     
-    enum AppError: Error, Equatable {
+    public enum AppError: Error, Equatable {
         case network
         case storage
     }
     
-    private(set) var state: ViewState = .idle
+    private(set) public var state: ViewState = .idle
     
-    var onUpdate: (() -> Void)?
+    public var onUpdate: (() -> Void)?
     var onSelectItem: ((NewsModel) -> Void)?
     
-    init(loader: FeedLoad, store: ReadingListStore) {
+    public init(loader: FeedLoad, store: ReadingListStore) {
         self.loader = loader
         self.store = store
     }
     
     
-    func load() async {
+    public func load() async {
         transition(to: .loading)
         
         do {
