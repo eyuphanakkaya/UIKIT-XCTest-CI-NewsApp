@@ -17,8 +17,19 @@ final class HomeViewModel {
     
     private(set) var readingList: [NewsModel] = []
     
-    private(set) var isLoading: Bool = false
-    private(set) var errorMessage: String = ""
+    enum ViewState: Equatable {
+        case idle
+        case loading
+        case loaded
+        case failed(AppError)
+    }
+    
+    enum AppError: Error, Equatable {
+        case network
+        case storage
+    }
+    
+    private(set) var state: ViewState = .idle
     
     var onUpdate: (() -> Void)?
     var onSelectItem: ((NewsModel) -> Void)?
@@ -30,37 +41,35 @@ final class HomeViewModel {
     
     
     func load() async {
-        isLoading = true
-        
-        defer { isLoading = false }
+        transition(to: .loading)
         
         do {
             allNews = try await loader.load()
             news = allNews
-            
-            onUpdate?()
+            transition(to: .loaded)
         } catch {
-            errorMessage = error.localizedDescription
-            onUpdate?()
+            transition(to: .failed(.network))
         }
     }
     
     func loadMore() async {
-        guard loader.hasMore,
-              !isLoading else { return }
+        guard loader.hasMore, state == .loaded else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        transition(to: .loading)
         
         do {
             let newItems = try await loader.loadMore()
             allNews += newItems
             news = allNews
-            onUpdate?()
+            transition(to: .loaded)
         } catch {
-            errorMessage = error.localizedDescription
-            onUpdate?()
+            transition(to: .failed(.network))
         }
+    }
+    
+    private func transition(to newState: ViewState) {
+        state = newState
+        onUpdate?()
     }
     
 }
@@ -89,7 +98,7 @@ extension HomeViewModel {
             readingList = try await store.retrieve()
             onUpdate?()
         } catch {
-            print(error)
+            transition(to: .failed(.storage))
         }
     }
     
@@ -111,7 +120,7 @@ extension HomeViewModel {
             try await store.insert(news)
             readingList.append(news)
         } catch {
-            print(error)
+            transition(to: .failed(.storage))
         }
     }
     
@@ -120,7 +129,7 @@ extension HomeViewModel {
             try await store.delete(id)
             readingList.removeAll { $0.id == id }
         } catch {
-            print(error)
+            transition(to: .failed(.storage))
         }
     }
 }
