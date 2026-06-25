@@ -9,7 +9,8 @@ import Foundation
 
 @MainActor
 final class HomeViewModel {
-    private let loader: FeedLoader & PaginatedFeedLoader
+    typealias FeedLoad = FeedLoader & PaginatedFeedLoader
+    private let loader: FeedLoad
     private let store: ReadingListStore
     
     private var news: [NewsModel] = []
@@ -34,7 +35,7 @@ final class HomeViewModel {
     var onUpdate: (() -> Void)?
     var onSelectItem: ((NewsModel) -> Void)?
     
-    init(loader: FeedLoader & PaginatedFeedLoader, store: ReadingListStore) {
+    init(loader: FeedLoad, store: ReadingListStore) {
         self.loader = loader
         self.store = store
     }
