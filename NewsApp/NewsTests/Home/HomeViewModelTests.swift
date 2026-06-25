@@ -15,7 +15,8 @@ final class HomeViewModelTests: XCTestCase {
         let (sut, _) = makeSUT()
         
         var capturedStates: [HomeViewModel.ViewState] = []
-        sut.onUpdate = {
+        sut.onUpdate = { [weak sut] in
+            guard let sut else { return }
             capturedStates.append(sut.state)
         }
         
@@ -29,7 +30,8 @@ final class HomeViewModelTests: XCTestCase {
         client.stubbedError = anyNSError()
         
         var capturedStates: [HomeViewModel.ViewState] = []
-        sut.onUpdate = {
+        sut.onUpdate = { [weak sut] in
+            guard let sut else { return }
             capturedStates.append(sut.state)
         }
         
@@ -40,13 +42,19 @@ final class HomeViewModelTests: XCTestCase {
     
     
     // MARK: - Helpers
-    private func makeSUT() -> (sut: HomeViewModel, client: FeedLoaderSpy) {
+    private func makeSUT(
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> (sut: HomeViewModel, client: FeedLoaderSpy) {
         let store = UserDefaultsReadingListStore(
             userDefaults: UserDefaults(suiteName: UUID().uuidString)!
         )
         
         let client = FeedLoaderSpy()
         let sut = HomeViewModel(loader: client, store: store)
+        
+        trackForMemoryLeaks(client, file: file, line: line)
+        trackForMemoryLeaks(sut,file: file, line: line)
         
         return (sut, client)
     }
