@@ -54,7 +54,7 @@ final public class HomeViewModel {
     }
     
     public func loadMore() async {
-        guard loader.hasMore, state == .loaded else { return }
+        guard loader.hasMore else { return }
         
         transition(to: .loading)
         
