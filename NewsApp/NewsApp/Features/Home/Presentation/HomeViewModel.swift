@@ -137,7 +137,7 @@ extension HomeViewModel {
 
 
 extension HomeViewModel {
-    func numberOfItems() -> Int {
+    public func numberOfItems() -> Int {
         news.count
     }
     

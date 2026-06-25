@@ -24,6 +24,18 @@ final class HomeViewModelTests: XCTestCase {
         await expect(sut, states: [.loading, .failed(.network)])
     }
     
+    func test_load_deliversCorrectItemCount_onSuccess() async {
+        let (sut, client) = makeSUT()
+        client.stubbedResult = [
+            uniqueItem(),
+            uniqueItem(),
+            uniqueItem()
+        ]
+        
+        await sut.load()
+        
+        XCTAssertEqual(sut.numberOfItems(), 3)
+    }
     
     // MARK: - Helpers
     private func makeSUT(
@@ -71,6 +83,20 @@ final class HomeViewModelTests: XCTestCase {
             return stubbedResult
         }
         
+    }
+    
+    private func uniqueItem(
+        id: String = UUID().uuidString,
+        title: String = "any title"
+    ) -> NewsModel {
+        NewsModel(
+            id: id,
+            title: title,
+            imageURL: "https://image.com/image.jpg",
+            creator: ["John"],
+            pubDate: "2026-06-22",
+            description: "Description"
+        )
     }
 
 }
