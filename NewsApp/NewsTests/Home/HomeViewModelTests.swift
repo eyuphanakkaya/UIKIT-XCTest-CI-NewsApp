@@ -98,6 +98,20 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.numberOfItems(), 4)
     }
     
+    func test_loadMore_deliversCorrectItemCount_onError() async {
+        let (sut, client) = makeSUT()
+        client.stubbedResult = [ uniqueItem(), uniqueItem() ]
+        
+        await sut.load()
+        
+        client.hasMore = true
+        client.stubbedError = anyNSError()
+        
+        await sut.loadMore()
+        
+        XCTAssertEqual(sut.numberOfItems(), 2)
+    }
+    
     
     // MARK: - Helpers
     private func makeSUT(
