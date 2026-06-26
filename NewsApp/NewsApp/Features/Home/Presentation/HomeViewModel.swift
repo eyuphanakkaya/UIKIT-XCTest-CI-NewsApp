@@ -8,40 +8,40 @@
 import Foundation
 
 @MainActor
-final class HomeViewModel {
-    typealias FeedLoad = FeedLoader & PaginatedFeedLoader
+final public class HomeViewModel {
+    public typealias FeedLoad = FeedLoader & PaginatedFeedLoader
     private let loader: FeedLoad
     private let store: ReadingListStore
     
     private var news: [NewsModel] = []
     private var allNews: [NewsModel] = []
     
-    private(set) var readingList: [NewsModel] = []
+    private(set) public var readingList: [NewsModel] = []
     
-    enum ViewState: Equatable {
+    public enum ViewState: Equatable {
         case idle
         case loading
         case loaded
         case failed(AppError)
     }
     
-    enum AppError: Error, Equatable {
+    public enum AppError: Error, Equatable {
         case network
         case storage
     }
     
-    private(set) var state: ViewState = .idle
+    private(set) public var state: ViewState = .idle
     
-    var onUpdate: (() -> Void)?
+    public var onUpdate: (() -> Void)?
     var onSelectItem: ((NewsModel) -> Void)?
     
-    init(loader: FeedLoad, store: ReadingListStore) {
+    public init(loader: FeedLoad, store: ReadingListStore) {
         self.loader = loader
         self.store = store
     }
     
     
-    func load() async {
+    public func load() async {
         transition(to: .loading)
         
         do {
@@ -53,8 +53,8 @@ final class HomeViewModel {
         }
     }
     
-    func loadMore() async {
-        guard loader.hasMore, state == .loaded else { return }
+    public func loadMore() async {
+        guard loader.hasMore else { return }
         
         transition(to: .loading)
         
@@ -77,7 +77,7 @@ final class HomeViewModel {
 
 extension HomeViewModel {
     
-    func search(_ query: String) {
+    public func search(_ query: String) {
         guard !query.isEmpty else {
 
             news = allNews
@@ -103,7 +103,7 @@ extension HomeViewModel {
         }
     }
     
-    func toggleBookmark(at index: Int) async {
+    public func toggleBookmark(at index: Int) async {
         let item = news[index]
 
         if readingList.contains(where: { $0.id == item.id }) {
@@ -137,7 +137,7 @@ extension HomeViewModel {
 
 
 extension HomeViewModel {
-    func numberOfItems() -> Int {
+    public func numberOfItems() -> Int {
         news.count
     }
     
