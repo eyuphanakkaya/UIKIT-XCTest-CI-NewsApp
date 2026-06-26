@@ -16,46 +16,6 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sut.state, .idle)
     }
     
-    func test_load_transitionsThroughLoadingToLoaded() async {
-        let (sut, _) = makeSUT()
-    
-        await expect(sut, states: [.loading, .loaded]) {
-            await sut.load()
-        }
-        
-    }
-    
-    func test_load_transitionsThroughLoadingToNetworkError() async {
-        let (sut, client) = makeSUT()
-        client.stubbedError = anyNSError()
-        
-        await expect(sut, states: [.loading, .failed(.network)]) {
-            await sut.load()
-        }
-    }
-    
-    func test_load_deliversCorrectItemCount_onSuccess() async {
-        let (sut, client) = makeSUT()
-        client.stubbedResult = [
-            uniqueItem(),
-            uniqueItem(),
-            uniqueItem()
-        ]
-        
-        await sut.load()
-        
-        XCTAssertEqual(sut.numberOfItems(), 3)
-    }
-    
-    func test_load_deliversCorrectItemCount_onError() async {
-        let (sut, client) = makeSUT()
-        client.stubbedError = anyNSError()
-        
-        await sut.load()
-        
-        XCTAssertEqual(sut.numberOfItems(), 0)
-    }
-    
     
     func test_loadMore_doesNothing_whenHasMoreIsFalse() async {
         let (sut, client) = makeSUT()
@@ -183,7 +143,7 @@ final class HomeViewModelTests: XCTestCase {
     }
     
     // MARK: - Helpers
-    private func makeSUT(
+    func makeSUT(
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> (sut: HomeViewModel, client: FeedLoaderSpy) {
@@ -200,7 +160,7 @@ final class HomeViewModelTests: XCTestCase {
         return (sut, client)
     }
     
-    private func expect(
+    func expect(
         _ sut: HomeViewModel,
         states: [HomeViewModel.ViewState],
         action: () async -> Void,
@@ -239,7 +199,7 @@ final class HomeViewModelTests: XCTestCase {
     }
     
     
-    final private class FeedLoaderSpy: HomeViewModel.FeedLoad {
+    final class FeedLoaderSpy: HomeViewModel.FeedLoad {
         var hasMore: Bool = false
         var stubbedError: Error?
         var stubbedResult: [NewsModel] = []
@@ -256,7 +216,7 @@ final class HomeViewModelTests: XCTestCase {
         
     }
     
-    private func uniqueItem(
+    func uniqueItem(
         id: String = UUID().uuidString,
         title: String = "any title"
     ) -> NewsModel {
